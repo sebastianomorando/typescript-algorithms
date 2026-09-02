@@ -3,7 +3,9 @@
   "private": true,
   "scripts": {
     "test": "bun test",
-    "bench:sort": "bun run sort.bench.ts"
+    "test:counting": "bun test ./countingSort.test.ts",
+    "bench:sort": "bun run sort.bench.ts",
+    "bench:counting": "bun run countingSort.bench.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"
