@@ -1,0 +1,14 @@
+{
+  "name": "typescript-algorithms",
+  "private": true,
+  "scripts": {
+    "test": "bun test",
+    "bench:sort": "bun run sort.bench.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^7"
+  }
+}
