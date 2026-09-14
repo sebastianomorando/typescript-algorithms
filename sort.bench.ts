@@ -1,6 +1,7 @@
 import { insertionSort } from "./insertionSort";
 import { mergeSort } from "./mergeSort";
 import { quickSort, randomizedQuickSort } from "./quickSort";
+import { heapSort } from "./heapSort";
 
 const DEFAULT_ARRAY_SIZE = 10_000;
 const AVERAGE_SAMPLE_COUNT = 100;
@@ -30,6 +31,10 @@ const sorters: Sorter[] = [
     {
         name: "mergeSort",
         sort: (values) => mergeSort(values, 0, values.length - 1),
+    },
+    {
+        name: "heapSort",
+        sort: (values) => heapSort(values),
     },
     {
         name: "quickSort",
