@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6f7f2" />
+    <title>Tree Lab · Il tuo laboratorio di alberi</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script type="module" src="./main.ts"></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="/" class="brand" aria-label="Tree Lab home"><span class="brand-icon"><svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 7v4M5 16v-5h14v5"/><circle cx="12" cy="4" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/></svg></span><span>tree<span class="brand-light">lab</span><span class="brand-dot">.</span></span></a>
+      <span class="header-description">Uno spazio per pensare ad alberi.</span>
+      <span id="save-status" class="save-status">Salvato in questo browser</span>
+      <button id="export" class="button subtle">Esporta <span aria-hidden="true">↗</span></button>
+      <button id="import" class="button subtle">Importa</button>
+      <input id="import-file" type="file" accept="application/json,.json" hidden />
+    </header>
+
+    <main>
+      <section class="intro">
+        <div><div class="eyebrow"><span></span> IL TUO LABORATORIO DI ALGORITMI</div><h1>Un nodo alla volta.</h1><p>Costruisci, sposta, ricollega. Capisci gli alberi mettendoci le mani.</p></div>
+        <button id="example" class="button">↺ <span>Carica esempio</span></button>
+      </section>
+      <section class="workspace" aria-label="Editor di alberi">
+        <div class="toolbar">
+          <div class="tools"><button id="add" class="button primary"><span aria-hidden="true">+</span> Aggiungi nodo</button><span class="divider"></span><button id="undo" class="icon-button" title="Annulla (Ctrl/⌘ Z)" aria-label="Annulla">↶</button><button id="redo" class="icon-button" title="Ripeti (Ctrl/⌘ Shift Z)" aria-label="Ripeti">↷</button></div>
+          <div class="tools"><button id="arrange" class="button subtle" title="Riordina le posizioni senza cambiare i collegamenti"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 7v4M5 16v-5h14v5"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="16" y="16" width="6" height="6" rx="1"/></svg><span>Riordina</span></button><button id="clear" class="button subtle">Svuota</button></div>
+        </div>
+        <div class="editor-body">
+          <div class="canvas-wrap" id="canvas-wrap">
+            <div class="canvas-caption"><span class="live-dot"></span> AREA LIBERA <span class="caption-divider">/</span> <span id="node-count">7 nodi</span></div>
+            <div id="mode-banner" class="mode-banner" hidden>Scegli il nuovo padre sulla tela. <button id="cancel-connect">Annulla</button></div>
+            <svg id="canvas" aria-label="Albero interattivo. Seleziona un nodo per modificarlo." tabindex="0" xmlns="http://www.w3.org/2000/svg"><g id="viewport"><g id="edges"></g><g id="nodes"></g></g></svg>
+            <div id="empty-state" class="empty-state" hidden><span><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M12 7v4M5 16v-5h14v5"/><circle cx="12" cy="4" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/></svg></span><h2>Le idee mettono radici qui.</h2><p>Aggiungi il primo nodo per iniziare.</p><button id="empty-add" class="button primary">+ Crea un nodo</button></div>
+            <div class="canvas-footer"><span class="canvas-hint">Trascina · Shift: sposta anche i figli · Rotellina: zoom</span><div class="zoom-controls"><button id="zoom-out" aria-label="Riduci zoom">−</button><span id="zoom-label">100%</span><button id="zoom-in" aria-label="Aumenta zoom">+</button><span class="divider"></span><button id="fit" aria-label="Centra albero" title="Centra albero"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M9 3H3v6M15 3h6v6M3 15v6h6M21 15v6h-6"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+          </div>
+          <aside class="inspector">
+            <div class="panel-heading"><span>DETTAGLI DEL NODO</span><span class="small-square">↗</span></div>
+            <div id="no-selection" class="no-selection"><div class="node-preview">?</div><h2>Ogni nodo ha una storia.</h2><p>Seleziona un nodo per cambiarne il valore, il colore e i collegamenti.</p></div>
+            <div id="selection" hidden>
+              <div class="selected-heading"><div id="node-preview" class="node-preview"></div><div><h2 id="selected-title">Nodo</h2><p id="node-kind">Radice</p></div></div>
+              <label class="field-label" for="node-value">Valore</label><input id="node-value" class="text-input" maxlength="80" placeholder="Un numero o un’etichetta" autocomplete="off" /><p class="field-hint">Invio o clic fuori dal campo per applicare.</p>
+              <span class="field-label" id="color-label">Colore</span><div id="color-options" class="color-options" role="group" aria-labelledby="color-label"></div>
+              <div class="section-line"></div>
+              <label class="field-label" for="node-parent">Nodo padre</label><select id="node-parent" class="text-input"></select>
+              <div class="connection-actions"><button id="connect" class="button">↗ Ricollega sulla tela</button><button id="detach" class="button subtle">Scollega</button></div>
+              <p class="field-hint">Scollegare mantiene tutti i figli del nodo.</p>
+              <div class="section-line"></div>
+              <span class="field-label">Fai crescere l’albero</span><div class="child-actions"><button id="add-left" class="button">↙ Figlio a sinistra</button><button id="add-right" class="button">↘ Figlio a destra</button></div>
+              <div class="section-line"></div>
+              <button id="delete" class="button danger">× Elimina nodo</button><p class="field-hint">I figli diventano radici indipendenti.</p><button id="delete-subtree" class="text-button danger">Elimina anche i discendenti</button>
+            </div>
+            <div class="manual-note"><span>✳</span><div><strong>Il prossimo passo è tuo.</strong><p>Nessun riordino automatico dei valori o dei colori. Sei tu a eseguire l’algoritmo.</p></div></div>
+          </aside>
+        </div>
+        <footer class="history-bar"><div><span class="history-dot"></span><strong id="step-count">Passo 0</strong><span class="history-separator">/</span><span id="step-label">Stato iniziale</span></div><span>Prova. Osserva. Torna indietro.</span></footer>
+      </section>
+      <section class="tips" aria-label="Come usare il laboratorio"><div><span class="tip-number">01</span><p><strong>Costruisci liberamente</strong><br />Aggiungi nodi o figli, anche in alberi separati.</p></div><div><span class="tip-number">02</span><p><strong>Sperimenta i passaggi</strong><br />Sposta un nodo. Ricollega un intero sottoalbero.</p></div><div><span class="tip-number">03</span><p><strong>Impara facendo</strong><br />Usa rosso e nero per studiare gli alberi RB.</p></div></section>
+    </main>
+    <div id="toast" role="status" aria-live="polite" hidden></div>
+  </body>
+</html>
