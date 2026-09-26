@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "bun --hot playground/server.ts",
-    "build": "bun build ./playground/index.html --outdir ./dist --minify",
+    "build": "bun build ./playground/index.html ./playground/graph.html --outdir ./dist --minify",
     "test": "bun test",
     "test:counting": "bun test ./countingSort.test.ts",
     "bench:sort": "bun run sort.bench.ts",
