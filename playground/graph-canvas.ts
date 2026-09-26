@@ -55,6 +55,23 @@ export function drawGraph(canvas: HTMLCanvasElement, graph: GraphModel, selectio
     context.strokeStyle = "#ffffff";
     context.lineWidth = 3;
     context.stroke();
+    if (node.value) {
+      context.font = "600 13px 'DM Sans', sans-serif";
+      const maxWidth = nodeRadius * 2 - 12;
+      let label = node.value;
+      if (context.measureText(label).width > maxWidth) {
+        label = "";
+        for (const character of node.value) {
+          if (context.measureText(label + character + "…").width > maxWidth) break;
+          label += character;
+        }
+        label += "…";
+      }
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.fillStyle = "#ffffff";
+      context.fillText(label, node.x, node.y + .5);
+    }
   }
 }
 

@@ -11,6 +11,8 @@ const nodeButton = document.getElementById("node-tool") as HTMLButtonElement;
 const edgeButton = document.getElementById("edge-tool") as HTMLButtonElement;
 const automaticButton = document.getElementById("automatic-tool") as HTMLButtonElement;
 const deleteButton = document.getElementById("delete-tool") as HTMLButtonElement;
+const nodeValueControl = document.getElementById("node-value-control")!;
+const nodeValueInput = document.getElementById("node-value") as HTMLInputElement;
 const weightControl = document.getElementById("weight-control")!;
 const weightInput = document.getElementById("edge-weight") as HTMLInputElement;
 const graph = GraphModel.load();
@@ -34,6 +36,9 @@ function syncControls() {
   canvas.classList.toggle("edge-mode", tool === "edge");
   automaticButton.setAttribute("aria-pressed", String(graph.automatic));
   deleteButton.disabled = selection === null;
+  const node = selection?.kind === "node" ? graph.getNode(selection.id) : undefined;
+  nodeValueControl.hidden = !node;
+  if (node && document.activeElement !== nodeValueInput) nodeValueInput.value = node.value;
   const edge = selection?.kind === "edge" ? graph.getEdge(selection.id) : undefined;
   weightControl.hidden = !edge;
   weightInput.disabled = graph.automatic;
@@ -69,6 +74,7 @@ function addNode(x: number, y: number) {
   selection = { kind: "node", id: node.id };
   graph.save();
   setTool("select");
+  nodeValueInput.focus({ preventScroll: true });
 }
 
 function connect(id: string) {
@@ -107,6 +113,13 @@ automaticButton.onclick = () => {
   scheduleDraw();
 };
 deleteButton.onclick = removeSelection;
+nodeValueInput.oninput = () => {
+  if (selection?.kind !== "node") return;
+  graph.setNodeValue(selection.id, nodeValueInput.value);
+  graph.save();
+  scheduleDraw();
+};
+nodeValueInput.onkeydown = event => { if (event.key === "Enter") nodeValueInput.blur(); };
 weightInput.onchange = () => {
   const edge = selection?.kind === "edge" ? graph.getEdge(selection.id) : undefined;
   if (!edge || graph.automatic) return;
@@ -189,7 +202,14 @@ canvas.addEventListener("pointercancel", event => {
 canvas.addEventListener("dblclick", event => {
   if (tool !== "select") return;
   const { x, y } = point(event);
-  if (!hitNode(graph, x, y) && !hitEdge(graph, x, y)) addNode(x, y);
+  const node = hitNode(graph, x, y);
+  if (node) {
+    selection = { kind: "node", id: node.id };
+    syncControls();
+    scheduleDraw();
+    nodeValueInput.focus({ preventScroll: true });
+    nodeValueInput.select();
+  } else if (!hitEdge(graph, x, y)) addNode(x, y);
 });
 
 document.addEventListener("keydown", event => {
