@@ -123,7 +123,7 @@ export class GraphModel {
     if (!this.#nodes.has(from) || !this.#nodes.has(to)) return null;
     if (from === to) return { path: [this.#nodes.get(from)!], distance: 0 };
 
-    const distances = new Map<string, number>([[from, 0]]);
+    /* const distances = new Map<string, number>([[from, 0]]);
     const previous = new Map<string, string>();
     const visited = new Set<string>();
     while (true) {
@@ -150,6 +150,56 @@ export class GraphModel {
     if (distance === undefined) return null;
     const ids = [to];
     while (ids[0] !== from) ids.unshift(previous.get(ids[0])!);
-    return { path: ids.map(id => this.#nodes.get(id)!), distance };
+    return { path: ids.map(id => this.#nodes.get(id)!), distance }; 
+    */
+
+    
+    const distances = new Map<string, number>();
+    const visited = new Set<string>();
+    const previous = new Map<string, string | null>();
+    distances.set(from, 0);
+    for (const node of this.#nodes.keys()) {
+      if (node !== from) distances.set(node, Infinity);
+    }
+
+    const queue: {id: string, distance: number}[] = [{id: from, distance: 0}];
+
+    while (queue.length > 0) {
+      queue.sort((a, b) => a.distance - b.distance);
+      const { id: currentId } = queue.shift()!;
+      if (visited.has(currentId)) continue;
+      visited.add(currentId);
+
+      if (currentId === to) break;
+
+      for (const { node, edge } of this.neighbors(currentId)) {
+        if (visited.has(node.id)) continue;
+        const weight = this.edgeWeight(edge);
+        if (weight < 0) return null; // Negative weights are not allowed
+        const newDistance = distances.get(currentId)! + weight;
+        if (newDistance < distances.get(node.id)!) {
+          distances.set(node.id, newDistance);
+          previous.set(node.id, currentId);
+          queue.push({id: node.id, distance: newDistance});
+        }
+      }
+    }
+
+    if (!distances.has(to) || distances.get(to)! === Infinity) return null;
+
+    let path: string[] = [];
+    let current: string | null = to;
+    while (current !== null) {
+      path.unshift(current);
+      current = previous.get(current) ?? null;
+    }
+
+    const distance = distances.get(to)!;
+
+    return {
+      path: path.map(id => this.#nodes.get(id)!),
+      distance
+    };
+
   }
 }
