@@ -137,6 +137,13 @@ canvas.addEventListener("pointerdown", event => {
     if (node) connect(node.id);
     return;
   }
+  if (event.shiftKey && node) {
+    event.preventDefault();
+    if (!firstNode && selection?.kind === "node" && selection.id !== node.id) firstNode = selection.id;
+    connect(node.id);
+    return;
+  }
+  firstNode = null;
   if (node) {
     selection = { kind: "node", id: node.id };
     drag = { pointerId: event.pointerId, id: node.id, x: node.x, y: node.y, offsetX: node.x - x, offsetY: node.y - y, moved: false };
