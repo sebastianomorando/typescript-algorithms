@@ -118,4 +118,38 @@ export class GraphModel {
       this.#adjacency.get(edge.to)?.delete(edge.from);
     }
   }
+
+  getShortestPath(from: string, to: string): { path: GraphNode[]; distance: number } | null {
+    if (!this.#nodes.has(from) || !this.#nodes.has(to)) return null;
+    if (from === to) return { path: [this.#nodes.get(from)!], distance: 0 };
+
+    const distances = new Map<string, number>([[from, 0]]);
+    const previous = new Map<string, string>();
+    const visited = new Set<string>();
+    while (true) {
+      let current: string | null = null;
+      let distance = Infinity;
+      for (const [id, candidate] of distances) {
+        if (!visited.has(id) && candidate < distance) { current = id; distance = candidate; }
+      }
+      if (current === null) break;
+      visited.add(current);
+      for (const { node, edge } of this.neighbors(current)) {
+        const weight = this.edgeWeight(edge);
+        if (weight < 0) return null;
+        if (visited.has(node.id)) continue;
+        const candidate = distance + weight;
+        if (candidate < (distances.get(node.id) ?? Infinity)) {
+          distances.set(node.id, candidate);
+          previous.set(node.id, current);
+        }
+      }
+    }
+
+    const distance = distances.get(to);
+    if (distance === undefined) return null;
+    const ids = [to];
+    while (ids[0] !== from) ids.unshift(previous.get(ids[0])!);
+    return { path: ids.map(id => this.#nodes.get(id)!), distance };
+  }
 }

@@ -15,10 +15,16 @@ const nodeValueControl = document.getElementById("node-value-control")!;
 const nodeValueInput = document.getElementById("node-value") as HTMLInputElement;
 const weightControl = document.getElementById("weight-control")!;
 const weightInput = document.getElementById("edge-weight") as HTMLInputElement;
+const contextMenu = document.getElementById("graph-context-menu")!;
+const pathStartButton = document.getElementById("path-start") as HTMLButtonElement;
+const pathEndButton = document.getElementById("path-end") as HTMLButtonElement;
 const graph = GraphModel.load();
 let selection: GraphSelection = null;
 let tool: Tool = "select";
 let firstNode: string | null = null;
+let pathStartId: string | null = null;
+let pathEndId: string | null = null;
+let contextNodeId: string | null = null;
 let drag: Drag | null = null;
 let frame = 0;
 
@@ -49,7 +55,8 @@ function scheduleDraw() {
   if (frame) return;
   frame = requestAnimationFrame(() => {
     frame = 0;
-    drawGraph(canvas, graph, selection, firstNode);
+    const route = pathStartId && pathEndId ? graph.getShortestPath(pathStartId, pathEndId) : null;
+    drawGraph(canvas, graph, selection, firstNode, { start: pathStartId, end: pathEndId, path: route?.path ?? null });
     if (graph.automatic && selection?.kind === "edge" && document.activeElement !== weightInput) {
       const edge = graph.getEdge(selection.id);
       if (edge) weightInput.value = String(graph.edgeWeight(edge));
@@ -93,9 +100,28 @@ function connect(id: string) {
   scheduleDraw();
 }
 
+function closeContextMenu() {
+  contextMenu.hidden = true;
+  contextNodeId = null;
+}
+
+function setPathEndpoint(endpoint: "start" | "end") {
+  if (!contextNodeId) return;
+  if (endpoint === "start") pathStartId = pathStartId === contextNodeId ? null : contextNodeId;
+  else pathEndId = pathEndId === contextNodeId ? null : contextNodeId;
+  closeContextMenu();
+  canvas.focus({ preventScroll: true });
+  scheduleDraw();
+}
+
 function removeSelection() {
   if (!selection) return;
+  if (selection.kind === "node") {
+    if (pathStartId === selection.id) pathStartId = null;
+    if (pathEndId === selection.id) pathEndId = null;
+  }
   graph.removeSelection(selection);
+  closeContextMenu();
   selection = null;
   firstNode = null;
   graph.save();
@@ -113,6 +139,8 @@ automaticButton.onclick = () => {
   scheduleDraw();
 };
 deleteButton.onclick = removeSelection;
+pathStartButton.onclick = () => setPathEndpoint("start");
+pathEndButton.onclick = () => setPathEndpoint("end");
 nodeValueInput.oninput = () => {
   if (selection?.kind !== "node") return;
   graph.setNodeValue(selection.id, nodeValueInput.value);
@@ -133,6 +161,31 @@ weightInput.onchange = () => {
   }
 };
 weightInput.onkeydown = event => { if (event.key === "Enter") weightInput.blur(); };
+
+canvas.addEventListener("contextmenu", event => {
+  const { x, y } = point(event);
+  const node = hitNode(graph, x, y);
+  if (!node) { closeContextMenu(); return; }
+  event.preventDefault();
+  contextNodeId = node.id;
+  selection = { kind: "node", id: node.id };
+  firstNode = null;
+  syncControls();
+  scheduleDraw();
+  pathStartButton.classList.toggle("active", pathStartId === node.id);
+  pathEndButton.classList.toggle("active", pathEndId === node.id);
+  pathStartButton.setAttribute("aria-label", pathStartId === node.id ? "Rimuovi nodo di partenza" : "Imposta come nodo di partenza");
+  pathEndButton.setAttribute("aria-label", pathEndId === node.id ? "Rimuovi nodo di arrivo" : "Imposta come nodo di arrivo");
+  contextMenu.hidden = false;
+  const margin = 8;
+  contextMenu.style.left = `${Math.max(margin, Math.min(event.clientX, window.innerWidth - contextMenu.offsetWidth - margin))}px`;
+  contextMenu.style.top = `${Math.max(margin, Math.min(event.clientY, window.innerHeight - contextMenu.offsetHeight - margin))}px`;
+  pathStartButton.focus({ preventScroll: true });
+});
+
+document.addEventListener("pointerdown", event => {
+  if (!contextMenu.hidden && !contextMenu.contains(event.target as Node)) closeContextMenu();
+});
 
 canvas.addEventListener("pointerdown", event => {
   if (event.button !== 0) return;
@@ -213,6 +266,11 @@ canvas.addEventListener("dblclick", event => {
 });
 
 document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && !contextMenu.hidden) {
+    closeContextMenu();
+    canvas.focus({ preventScroll: true });
+    return;
+  }
   if (event.target instanceof HTMLInputElement) return;
   if (event.key === "Delete" || event.key === "Backspace") {
     if (selection) { event.preventDefault(); removeSelection(); }
@@ -222,6 +280,7 @@ document.addEventListener("keydown", event => {
 });
 
 new ResizeObserver(resize).observe(canvas);
-window.addEventListener("resize", resize);
+window.addEventListener("resize", () => { resize(); closeContextMenu(); });
+window.addEventListener("scroll", closeContextMenu, true);
 syncControls();
 resize();

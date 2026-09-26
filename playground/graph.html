@@ -26,5 +26,9 @@
       </div>
     </header>
     <main class="board"><canvas id="graph-canvas" tabindex="0" aria-label="Editor di grafi: aggiungi nodi, collega due nodi, seleziona e trascina"></canvas></main>
+    <div id="graph-context-menu" class="context-menu" role="menu" aria-label="Percorso" hidden>
+      <button id="path-start" type="button" role="menuitem" aria-label="Imposta come nodo di partenza"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="6" cy="12" r="3"/><path d="M10 12h10m-4-4 4 4-4 4"/></svg></button>
+      <button id="path-end" type="button" role="menuitem" aria-label="Imposta come nodo di arrivo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 12h10m-4-4 4 4-4 4"/><circle cx="19" cy="12" r="3"/></svg></button>
+    </div>
   </body>
 </html>
