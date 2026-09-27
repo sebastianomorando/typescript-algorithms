@@ -1,0 +1,5 @@
+.brand svg{background:#e4eef1;color:#386c80}.tool.active,.tool[aria-pressed=true]{background:#e5eff2;color:#2b7189}
+.flow-result{display:flex;align-items:center;gap:6px;padding:0 10px;height:34px;border-radius:6px;background:#e8f3f3;color:#246c7c;font-size:14px;font-weight:700;white-space:nowrap}.flow-result svg{width:18px;height:18px}
+#graph-canvas{background-color:#f7faf9;background-image:radial-gradient(#cbd9d7 .8px,transparent .8px)}
+.context-menu button.active:first-child{background:#e1eff5;color:#267796}.context-menu button.active:last-child{background:#f9e8d8;color:#c06c37}
+@media(max-width:620px){.flow-result{padding:0 7px;font-size:12px}.flow-result svg{width:15px;height:15px}}

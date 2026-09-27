@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6f7f2" />
+    <title>Flow Lab</title>
+    <link rel="stylesheet" href="./graph.css" />
+    <link rel="stylesheet" href="./flow.css" />
+    <script type="module" src="./flow-editor.ts"></script>
+  </head>
+  <body>
+    <header class="header">
+      <a class="brand" href="./graph.html" aria-label="Torna all'editor di grafi">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="4" cy="12" r="2"/><circle cx="20" cy="12" r="2"/><path d="M6 12h12m-4-4 4 4-4 4"/></svg>
+      </a>
+      <div class="toolbar" role="toolbar" aria-label="Strumenti della rete di flusso">
+        <button id="select-tool" class="tool active" type="button" aria-label="Seleziona e sposta" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m5 3 13 10-6 1-3 6z"/></svg></button>
+        <button id="node-tool" class="tool" type="button" aria-label="Aggiungi nodo" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10" cy="12" r="6"/><path d="M19 5v8M15 9h8"/></svg></button>
+        <button id="edge-tool" class="tool" type="button" aria-label="Aggiungi arco diretto selezionando due nodi" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="5" cy="12" r="2"/><path d="M8 12h13m-4-4 4 4-4 4"/></svg></button>
+        <span class="divider" aria-hidden="true"></span>
+        <div id="node-value-control" class="node-value-control" hidden><input id="node-value" type="text" aria-label="Valore del nodo" autocomplete="off" /></div>
+        <div id="capacity-control" class="weight-control" hidden><input id="edge-capacity" type="number" min="0" step="any" inputmode="decimal" aria-label="Capacità dell'arco" /></div>
+        <span id="flow-result" class="flow-result" role="status" aria-label="Flusso massimo" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 17h5l3-10 3 10 3-6h4"/></svg><span id="max-flow-value">0</span></span>
+        <span class="divider" aria-hidden="true"></span>
+        <button id="delete-tool" class="tool danger" type="button" aria-label="Elimina la selezione" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v6m4-6v6"/></svg></button>
+      </div>
+    </header>
+    <main class="board"><canvas id="graph-canvas" tabindex="0" aria-label="Editor di reti di flusso"></canvas></main>
+    <div id="flow-context-menu" class="context-menu" role="menu" aria-label="Sorgente e pozzo" hidden>
+      <button id="flow-source" type="button" role="menuitem" aria-label="Imposta come sorgente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="6" cy="12" r="3"/><path d="M10 12h10m-4-4 4 4-4 4"/></svg></button>
+      <button id="flow-sink" type="button" role="menuitem" aria-label="Imposta come pozzo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 12h10m-4-4 4 4-4 4"/><circle cx="19" cy="12" r="3"/></svg></button>
+    </div>
+  </body>
+</html>
